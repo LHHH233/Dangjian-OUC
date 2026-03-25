@@ -19,3 +19,7 @@ Thumbs.db
 
 # SSL keystore (contains private key)
 src/main/resources/keystore.p12
+
+# Excel files (may contain private data)
+*.xlsx
+*.xls

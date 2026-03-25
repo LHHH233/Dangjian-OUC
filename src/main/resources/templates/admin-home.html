@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>党员信息管理 - 党员管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .action-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 200px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 8px 6px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+            position: sticky;
+            top: 0;
+            font-size: 12px;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .data-table .action-buttons {
+            min-width: 200px;
+        }
+
+        .data-table .action-buttons .btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            margin: 1px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-buttons .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+        }
+
+        .pagination a:hover {
+            background: #f0f0f0;
+        }
+
+        .pagination .current {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-form {
+                justify-content: center;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">党员管理系统</div>
+            <div class="nav-links">
+                <a href="/admin/dashboard" class="nav-link">管理后台</a>
+                <a href="/admin/import" class="nav-link">Excel导入</a>
+                <a href="/admin/members" class="nav-link">党员管理</a>
+                <a href="/query" class="nav-link">党员查询</a>
+                <a href="/logout" class="logout-btn">退出登录</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="page-title">党员信息管理</h1>
+
+        <!-- 统计信息 -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(members)}">0</div>
+                <div class="stat-label">党员总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(members.?[politicalStatus != null and politicalStatus.contains('正式党员')])}">0</div>
+                <div class="stat-label">正式党员</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(members.?[politicalStatus != null and politicalStatus.contains('预备党员')])}">0</div>
+                <div class="stat-label">预备党员</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(members.?[organization != null and !organization.isEmpty()].![organization].distinct())}">0</div>
+                <div class="stat-label">组织数量</div>
+            </div>
+        </div>
+
+        <!-- 操作栏 -->
+        <div class="action-bar">
+            <div class="search-form">
+                <form method="get" action="/admin/search" style="display: flex; gap: 15px; align-items: center;">
+                    <input type="text" name="name" placeholder="按姓名搜索" class="search-input" th:value="${searchName}">
+                    <input type="text" name="idCardNumber" placeholder="按身份证号搜索" class="search-input" th:value="${searchIdCard}">
+                    <button type="submit" class="btn btn-primary">🔍 搜索</button>
+                    <a href="/admin/members" class="btn btn-warning">🔄 重置</a>
+                </form>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/admin/add" class="btn btn-success">➕ 添加党员</a>
+                <a href="/admin/import" class="btn btn-primary">📊 Excel导入</a>
+                <button onclick="exportToExcel()" class="btn btn-warning">📤 导出Excel</button>
+                <button onclick="batchDelete()" class="btn btn-danger">🗑️ 批量删除</button>
+            </div>
+        </div>
+
+        <!-- 数据表格 -->
+        <div class="table-container">
+            <table class="data-table" th:if="${!#lists.isEmpty(members)}">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onchange="selectAll()" title="全选/取消全选"></th>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>性别</th>
+                            <th>民族</th>
+                            <th>政治面貌</th>
+                            <th>身份证号</th>
+                            <th>出生日期</th>
+                            <th>专业</th>
+                            <th>年级</th>
+                            <th>学历</th>
+                            <th>组织</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="member : ${members}">
+                            <td><input type="checkbox" name="memberIds" th:value="${member.id}"></td>
+                            <td th:text="${member.serialNumber}">001</td>
+                            <td th:text="${member.name}">张三</td>
+                            <td th:text="${member.gender}">男</td>
+                            <td th:text="${member.ethnicGroup}">汉族</td>
+                            <td th:text="${member.politicalStatus}">中共正式党员</td>
+                            <td th:text="${member.idCardNumber}">110101199001011234</td>
+                            <td th:text="${#temporals.format(member.birthDate, 'yyyy-MM-dd')}">1990-01-01</td>
+                            <td th:text="${member.major}">计算机科学与技术</td>
+                            <td th:text="${member.classOfYear}">2018级</td>
+                            <td th:text="${member.degree}">硕士研究生</td>
+                            <td th:text="${member.organization}">中国海洋大学三亚海洋研究院</td>
+                            <td>
+                            <div class="action-buttons">
+                                <a th:href="@{/admin/edit}" class="btn btn-warning" title="编辑党员信息">✏️ 编辑</a>
+                                <a th:href="@{/proof/{id}(id=${member.id})}" class="btn btn-primary" title="生成党员证明" style="background: #28a745; font-weight: bold;">🖨️ 打印证明</a>
+                                <button onclick="viewDetails([[${member.id}]])" class="btn btn-info" title="查看详细信息">👁️ 详情</button>
+                                <a th:href="@{/admin/delete/{id}(id=${member.id})}" 
+                                   class="btn btn-danger" 
+                                   title="删除党员信息"
+                                   onclick="return confirm('确定要删除这个党员的信息吗？')">🗑️ 删除</a>
+                            </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情模态框 -->
+    <div id="detailModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color: white; margin: 5% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; max-height: 80%; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>党员详细信息</h2>
+                <span class="close" onclick="closeModal()" style="font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            </div>
+            <div id="detailContent">
+                <!-- 详情内容将在这里动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些交互功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 搜索表单验证
+            const searchForm = document.querySelector('form[action="/admin/search"]');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    const name = document.querySelector('input[name="name"]').value.trim();
+                    const idCard = document.querySelector('input[name="idCardNumber"]').value.trim();
+                    
+                    if (!name && !idCard) {
+                        e.preventDefault();
+                        alert('请输入姓名或身份证号进行搜索');
+                    }
+                });
+            }
+
+            // 删除确认
+            const deleteLinks = document.querySelectorAll('a[onclick*="confirm"]');
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!confirm('确定要删除这个党员的信息吗？此操作不可恢复！')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+
+        // 查看详情功能
+        function viewDetails(memberId) {
+            // 这里可以通过AJAX获取详细信息，现在先显示一个简单的详情
+            const detailContent = document.getElementById('detailContent');
+            detailContent.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <p>正在加载详细信息...</p>
+                    <p>党员ID: ${memberId}</p>
+                    <p>点击"证明"按钮可以生成党员证明文档</p>
+                </div>
+            `;
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 导出Excel功能
+        function exportToExcel() {
+            // 创建导出请求
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/export';
+            
+            // 添加CSRF token（如果需要）
+            const csrfToken = document.querySelector('meta[name="_csrf"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_csrf';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        }
+
+        // 批量操作功能
+        function selectAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][name="memberIds"]');
+            const selectAllCheckbox = document.getElementById('selectAll');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+
+        function batchDelete() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][name="memberIds"]:checked');
+            if (checkboxes.length === 0) {
+                alert('请选择要删除的党员');
+                return;
+            }
+            
+            if (confirm(`确定要删除选中的 ${checkboxes.length} 个党员吗？此操作不可恢复！`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/batch-delete';
+                
+                checkboxes.forEach(checkbox => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'memberIds';
+                    input.value = checkbox.value;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
+</html>

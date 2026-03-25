@@ -1,0 +1,21 @@
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# SSL keystore (contains private key)
+src/main/resources/keystore.p12

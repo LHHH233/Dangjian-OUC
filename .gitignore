@@ -23,3 +23,11 @@ src/main/resources/keystore.p12
 # Excel files (may contain private data)
 *.xlsx
 *.xls
+
+# Claude Code settings (contains tokens)
+.claude/settings.json
+.claude/settings.local.json
+
+# Node modules
+node_modules/
+package-lock.json

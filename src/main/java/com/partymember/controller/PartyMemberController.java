@@ -2,6 +2,8 @@ package com.partymember.controller;
 
 import com.partymember.entity.PartyMember;
 import com.partymember.service.PartyMemberService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,9 @@ import java.util.Optional;
 
 @Controller
 public class PartyMemberController {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(PartyMemberController.class);
+
     @Autowired
     private PartyMemberService partyMemberService;
     
@@ -132,7 +136,7 @@ public class PartyMemberController {
                                @RequestParam(required = false) String idCardNumber,
                                Model model) {
         List<PartyMember> members;
-        if (name != null && !name.trim().isEmpty() || idCardNumber != null && !idCardNumber.trim().isEmpty()) {
+        if ((name != null && !name.trim().isEmpty()) || (idCardNumber != null && !idCardNumber.trim().isEmpty())) {
             members = partyMemberService.searchByNameAndIdCard(name, idCardNumber);
         } else {
             members = partyMemberService.getAllPartyMembers();
@@ -152,17 +156,19 @@ public class PartyMemberController {
             Optional<PartyMember> member = partyMemberService.getPartyMemberById(id);
             if (member.isPresent()) {
                 byte[] documentBytes = partyMemberService.generateProofDocument(member.get());
-                
+                String memberName = member.get().getName() != null ? member.get().getName() : "未知";
+
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-                headers.setContentDispositionFormData("attachment", 
-                    member.get().getName() + "_党员身份证明.docx");
-                
+                headers.setContentDispositionFormData("attachment",
+                    memberName + "_党员身份证明.docx");
+
                 return new ResponseEntity<>(documentBytes, headers, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (IOException e) {
+            logger.error("生成证明文档失败, id={}", id, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -174,31 +180,30 @@ public class PartyMemberController {
     public ResponseEntity<byte[]> generateProofFromQuery(@RequestParam String name,
                                                         @RequestParam String idCardNumber) {
         try {
-            System.out.println("收到Word文档生成请求 - 姓名: " + name + ", 身份证: " + idCardNumber);
-            
+            logger.info("收到Word文档生成请求 - 姓名: {}, 身份证: {}", name, idCardNumber);
+
             Optional<PartyMember> member = partyMemberService.findByNameAndIdCard(name, idCardNumber);
             if (member.isPresent()) {
-                System.out.println("找到党员信息，开始生成Word文档");
+                logger.info("找到党员信息，开始生成Word文档");
                 byte[] documentBytes = partyMemberService.generateProofDocument(member.get());
-                System.out.println("Word文档生成成功，大小: " + documentBytes.length + " bytes");
-                
+                logger.info("Word文档生成成功，大小: {} bytes", documentBytes.length);
+                String memberName = member.get().getName() != null ? member.get().getName() : "未知";
+
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-                headers.setContentDispositionFormData("attachment", 
-                    member.get().getName() + "_党员身份证明.docx");
-                
+                headers.setContentDispositionFormData("attachment",
+                    memberName + "_党员身份证明.docx");
+
                 return new ResponseEntity<>(documentBytes, headers, HttpStatus.OK);
             } else {
-                System.out.println("未找到匹配的党员信息");
+                logger.info("未找到匹配的党员信息");
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (IOException e) {
-            System.err.println("Word文档生成失败: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Word文档生成失败", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            System.err.println("Word文档生成过程中发生未知错误: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Word文档生成过程中发生未知错误", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -264,7 +269,7 @@ public class PartyMemberController {
             return new ResponseEntity<>(outputStream.toByteArray(), responseHeaders, HttpStatus.OK);
             
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("导出Excel失败", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -274,13 +279,16 @@ public class PartyMemberController {
      */
     @PostMapping("/admin/batch-delete")
     public String batchDelete(@RequestParam("memberIds") List<Long> memberIds) {
+        if (memberIds == null || memberIds.isEmpty()) {
+            return "redirect:/admin/members?error=未选择任何党员";
+        }
         try {
             for (Long id : memberIds) {
                 partyMemberService.deletePartyMember(id);
             }
             return "redirect:/admin/members?message=批量删除成功";
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("批量删除失败", e);
             return "redirect:/admin/members?error=批量删除失败";
         }
     }

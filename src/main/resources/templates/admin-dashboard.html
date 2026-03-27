@@ -175,7 +175,7 @@
         <div class="header-content">
             <div class="logo">党员管理系统</div>
             <div class="user-info">
-                <span class="welcome">欢迎，管理员</span>
+                <span class="welcome">欢迎，<span sec:authentication="name">管理员</span></span>
                 <a href="/logout" class="logout-btn">退出登录</a>
             </div>
         </div>
@@ -212,7 +212,7 @@
                 </div>
             </a>
 
-            <a href="/admin/reports" class="menu-card">
+            <a href="/admin/members" class="menu-card">
                 <div class="menu-icon">📋</div>
                 <div class="menu-title">报表统计</div>
                 <div class="menu-description">

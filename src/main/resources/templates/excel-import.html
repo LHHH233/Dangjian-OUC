@@ -439,14 +439,16 @@
 
         // 显示结果
         function showResult(data) {
+            resultContainer.classList.remove('result-error', 'result-success');
             resultContainer.classList.add('show');
-            
+            errorList.innerHTML = '';
+
             if (data.errorCount > 0) {
                 resultContainer.classList.add('result-error');
                 resultMessage.textContent = data.message;
-                
+
                 if (data.errors && data.errors.length > 0) {
-                    errorList.innerHTML = data.errors.map(error => 
+                    errorList.innerHTML = data.errors.map(error =>
                         `<div class="error-item">${error}</div>`
                     ).join('');
                 }

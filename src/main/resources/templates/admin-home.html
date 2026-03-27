@@ -421,14 +421,14 @@
                             <td th:text="${member.ethnicGroup}">汉族</td>
                             <td th:text="${member.politicalStatus}">中共正式党员</td>
                             <td th:text="${member.idCardNumber}">110101199001011234</td>
-                            <td th:text="${#temporals.format(member.birthDate, 'yyyy-MM-dd')}">1990-01-01</td>
+                            <td th:text="${member.birthDate != null ? #temporals.format(member.birthDate, 'yyyy-MM-dd') : '未填写'}">1990-01-01</td>
                             <td th:text="${member.major}">计算机科学与技术</td>
                             <td th:text="${member.classOfYear}">2018级</td>
                             <td th:text="${member.degree}">硕士研究生</td>
                             <td th:text="${member.organization}">中国海洋大学三亚海洋研究院</td>
                             <td>
                             <div class="action-buttons">
-                                <a th:href="@{/admin/edit}" class="btn btn-warning" title="编辑党员信息">✏️ 编辑</a>
+                                <a th:href="@{/admin/edit/{id}(id=${member.id})}" class="btn btn-warning" title="编辑党员信息">✏️ 编辑</a>
                                 <a th:href="@{/proof/{id}(id=${member.id})}" class="btn btn-primary" title="生成党员证明" style="background: #28a745; font-weight: bold;">🖨️ 打印证明</a>
                                 <button onclick="viewDetails([[${member.id}]])" class="btn btn-info" title="查看详细信息">👁️ 详情</button>
                                 <a th:href="@{/admin/delete/{id}(id=${member.id})}" 

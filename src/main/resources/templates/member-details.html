@@ -147,7 +147,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">入党日期：</span>
-                    <span class="info-value" th:text="${#temporals.format(member.joinDate, 'yyyy年MM月dd日')}"></span>
+                    <span class="info-value" th:text="${member.joinDate != null ? #temporals.format(member.joinDate, 'yyyy年MM月dd日') : '未填写'}"></span>
                 </div>
             </div>
             
@@ -159,7 +159,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">出生日期：</span>
-                    <span class="info-value" th:text="${#temporals.format(member.birthDate, 'yyyy年MM月dd日')}"></span>
+                    <span class="info-value" th:text="${member.birthDate != null ? #temporals.format(member.birthDate, 'yyyy年MM月dd日') : '未填写'}"></span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">出生地：</span>
@@ -179,7 +179,7 @@
                 <h3>教育信息</h3>
                 <div class="info-item">
                     <span class="info-label">入学日期：</span>
-                    <span class="info-value" th:text="${#temporals.format(member.admissionDate, 'yyyy年MM月dd日')}"></span>
+                    <span class="info-value" th:text="${member.admissionDate != null ? #temporals.format(member.admissionDate, 'yyyy年MM月dd日') : '未填写'}"></span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">学历：</span>

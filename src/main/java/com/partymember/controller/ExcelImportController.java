@@ -48,6 +48,11 @@ public class ExcelImportController {
                 return ResponseEntity.badRequest().body(new ImportResult("请选择要上传的文件", 0, 0, new ArrayList<>()));
             }
 
+            // 限制文件大小不超过10MB
+            if (file.getSize() > 10 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body(new ImportResult("文件大小不能超过10MB", 0, 0, new ArrayList<>()));
+            }
+
             String filename = file.getOriginalFilename();
             if (filename == null || (!filename.endsWith(".xlsx") && !filename.endsWith(".xls"))) {
                 return ResponseEntity.badRequest().body(new ImportResult("请上传Excel文件(.xlsx或.xls格式)", 0, 0, new ArrayList<>()));
@@ -73,7 +78,8 @@ public class ExcelImportController {
                     successCount++;
                 } catch (Exception e) {
                     logger.error("保存党员信息失败: {}", member.getName(), e);
-                    errors.add("保存 " + member.getName() + " 的信息时出错: " + e.getMessage());
+                    String memberName = member.getName() != null ? member.getName() : "第" + (importedMembers.indexOf(member) + 1) + "行";
+                    errors.add("保存 " + memberName + " 的信息时出错: " + e.getMessage());
                     errorCount++;
                 }
             }

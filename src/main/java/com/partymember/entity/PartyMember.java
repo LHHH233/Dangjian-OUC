@@ -1,34 +1,38 @@
 package com.partymember.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "party_members")
 public class PartyMember {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "serial_number")
     private String serialNumber;
-    
+
+    @NotBlank(message = "姓名不能为空")
     @Column(name = "name", nullable = false)
     private String name;
-    
+
     @Column(name = "gender")
     private String gender;
-    
+
     @Column(name = "ethnic_group")
     private String ethnicGroup;
-    
+
     @Column(name = "political_status")
     private String politicalStatus;
-    
+
     @Column(name = "join_date")
     private LocalDate joinDate;
-    
+
+    @Pattern(regexp = "^$|^\\d{17}[\\dXx]$", message = "身份证号格式不正确")
     @Column(name = "id_card_number", unique = true)
     private String idCardNumber;
     

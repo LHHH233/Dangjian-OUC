@@ -2,6 +2,8 @@ package com.partymember.controller;
 
 import com.partymember.entity.PartyMember;
 import com.partymember.service.PartyMemberService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,22 +20,24 @@ import java.util.Optional;
 
 @Controller
 public class SimplePdfController {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(SimplePdfController.class);
+
     @Autowired
     private PartyMemberService partyMemberService;
-    
+
     @GetMapping("/simple-proof/{id}")
     public ResponseEntity<byte[]> generateSimpleProof(@PathVariable Long id) {
         try {
-            System.out.println("收到PDF生成请求 - ID: " + id);
-            
+            logger.info("收到证明文档生成请求 - ID: {}", id);
+
             Optional<PartyMember> member = partyMemberService.getPartyMemberById(id);
             if (!member.isPresent()) {
-                System.out.println("未找到党员信息");
+                logger.info("未找到党员信息, id={}", id);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            
-            System.out.println("找到党员信息: " + member.get().getName());
+
+            logger.info("找到党员信息: {}", member.get().getName());
             
             // 创建Word文档
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -130,17 +134,17 @@ public class SimplePdfController {
             }
             
             byte[] wordBytes = outputStream.toByteArray();
-            System.out.println("Word文档生成成功，大小: " + wordBytes.length + " bytes");
-            
+            logger.info("Word文档生成成功，大小: {} bytes", wordBytes.length);
+            String memberName = member.get().getName() != null ? member.get().getName() : "未知";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-            headers.setContentDispositionFormData("attachment", member.get().getName() + "_党员身份证明.docx");
-            
+            headers.setContentDispositionFormData("attachment", memberName + "_党员身份证明.docx");
+
             return new ResponseEntity<>(wordBytes, headers, HttpStatus.OK);
-            
+
         } catch (Exception e) {
-            System.err.println("Word文档生成失败: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Word文档生成失败", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

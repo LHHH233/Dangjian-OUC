@@ -44,3 +44,21 @@ mvn test                         # 运行测试
 - Thymeleaf 模板位于 `src/main/resources/templates/`（共 9 个 HTML 文件）
 - `id_card_number` 在数据库中有唯一约束
 - 所有日期使用 `LocalDate`，文档中格式化为 `yyyy年MM月dd日`
+
+## Git 提交规范
+
+提交信息格式：
+```
+<type>: <description>
+```
+
+| 类型 | 说明 |
+|------|------|
+| feat | 新功能 |
+| fix | Bug 修复 |
+| docs | 文档更新 |
+| style | 代码格式（不影响代码运行） |
+| refactor | 重构 |
+| perf | 性能优化 |
+| test | 测试 |
+| chore | 构建/工具链 |
